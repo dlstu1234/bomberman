@@ -9,8 +9,11 @@ public:
 
 	// Object을(를) 통해 상속됨
 	virtual eObjectType GetObjectType() const override;
-
+	virtual void Render() override;
 	virtual void Interaction(class Hero* a_refHero) override;
-
+	
+	//아이템 타입 추가됨 기본세팅 none
 	eItem m_eType = eItem::None;
+	//아이템? 타일 그리는건가?
+	RenderTile m_Item[(int)eItem::Max];
 };

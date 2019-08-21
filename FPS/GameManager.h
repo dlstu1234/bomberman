@@ -51,7 +51,7 @@ public:
 public:
 	enum
 	{
-		MaxLife = 3,
+		MaxLife = 3,  
 		RoundTime = 90,
 
 		MoveSpeed = 10,
@@ -61,8 +61,6 @@ public:
 	};
 
 	void Init();
-
-	//추가됨- 뭔가를 지움
 	void Release();
 
 	void GameInit();
@@ -71,38 +69,28 @@ public:
 	void Update(float a_fDeltaTime);
 	void Render();
 
-	//추가된 함수. 클리어? 요것도 뭔가를 지울듯 
 	void ClearObject();
 
-	//상호작용 추가됨- 무슨 상호작용?
-	// 일단 오브젝트 지움
 	void RemoveObject(class Object* a_pObj);
-	//아이템도 떨궈
 	void DropItem(class Object* a_pObj);
-	//폭탄의 데이터를 가져오는듯
 	void GetBombData(class Bomb* a_refBomb) const;
-	//아이템 얻으면? 먹으면 하는듯
 	void ObtainItem(eItem a_eItem);
 
 private:
 
-	//오브젝트
 	std::vector<class Object*> m_vcObj;
 	class Player* m_pPlayer = nullptr;
 
-	//스테이지 정보
 	int m_nNowStage = 0;
-	float m_fGameTime = 0; // 스테이지 별 남은 시간
+	float m_fGameTime = 0;
 	class MapData* m_refMap = nullptr;
 	char** m_pMap = nullptr;
 
-	int m_nNowLife = 0;		// 플레이어 라이프
-	int m_nScore = 0;		//점수
+	int m_nNowLife = 0;
+	int m_nScore = 0;
 
-	// 추가됨- 폭발 왜?
+
 	std::queue<class Bomb*> m_qBomb;
-
-	//추가됨- 현재 플레이어 데이터
 	CharacterData m_stPlayerData;
 };
 

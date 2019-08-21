@@ -14,8 +14,9 @@ private:
 	static MapData m_arrData[eGame::MaxStage];
 
 private:
-	//새로 생김. 맵만드는 함수 같음
-	void MakeMap();
+	//3번째 이름이 바뀜
+	void MakeMapBuffer();
+
 	//데이터 지우기?같음 어떤 데이터?
 	void ReleaseData();
 

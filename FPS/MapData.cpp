@@ -26,7 +26,7 @@ void MapData::Init()
 		"1000000001"
 		"1050000001"
 		"1111111111";
-	m_arrData[0].MakeMap();
+	m_arrData[0].MakeMapBuffer();
 
 	// 2스테이지
 	m_arrData[1].x = 10;
@@ -42,7 +42,7 @@ void MapData::Init()
 		"1000000001"
 		"1050000001"
 		"1111111111";
-	m_arrData[1].MakeMap();
+	m_arrData[1].MakeMapBuffer();
 
 	// 3스테이지
 	m_arrData[2].x = 10;
@@ -58,10 +58,10 @@ void MapData::Init()
 		"1000000001"
 		"1050000001"
 		"1111111111";
-	m_arrData[2].MakeMap();
+	m_arrData[2].MakeMapBuffer();
 }
 
-//맵 배열 지우기
+//맵 지우기
 void MapData::Release()
 {
 	for (auto& mapData : m_arrData)
@@ -69,35 +69,42 @@ void MapData::Release()
 		mapData.ReleaseData();
 	}
 }
-// 맵 만들기
-void MapData::MakeMap()
+
+// 3번째 맵 만들기 변경됨
+void MapData::MakeMapBuffer()
 {
-	//맵에 새로 char* 좌표값 y 만들어 저장?
-	pMap = new char*[y];
-	
-	//y까지 돌면서
-	for (int i = 0; i < y; ++i)
+	int nX = x * TileSize;
+	int nY = y * TileSize;
+
+	pMap = new char*[nY];
+	//memcyp 쓰던걸 빼버림
+	for (int i = 0; i < nY; ++i)
 	{
-		//x값을 새로 저장
-		pMap[i] = new char[x + 1];
-
-		int gap = i * x;
-
-		// 복사
-		memcpy_s(pMap[i], sizeof(char) * (x + 1),
-			mapOriginData + gap, sizeof(char)* x);
-
-		pMap[i][x] = 0;
+		pMap[i] = new char[nX + 1];
+		pMap[i][nX] = 0;
 	}
 }
 
-// 맵 데이터 지우기
+//3번째에 바뀐 맵 데이터 지우기
 void MapData::ReleaseData()
 {
-	for (int i = 0; i < y; ++i)
+	int nY = y * TileSize;
+
+	for (int i = 0; i < nY; ++i)
 	{
 		SAFE_DELETE_ARR(pMap[i])
 	}
 
 	SAFE_DELETE_ARR(pMap);
+}
+
+//3번째에 바뀜 그리는게 조금 달라짐 nY를 받는?
+void MapData::Render()
+{
+	int nY = y * TileSize;
+
+	for (int i = 0; i < nY; ++i)
+	{
+		cout << pMap[i] << endl;
+	}
 }

@@ -41,22 +41,19 @@ void GameManager::GameInit()
 	m_nScore = 0;
 	m_nNowStage = 0;
 }
-//스테이지 시작 많이 추가됨
+
 void GameManager::StageStart()
 {
 	++m_nNowStage;
 	m_fGameTime = RoundTime;
 
-	//추가됨 - 오브젝트 지우기
 	ClearObject();
 
 	MapData::Get(m_nNowStage);
-	assert(m_refMap != nullptr && m_refMap != nullptr); // 예외처리 추가됨
+	assert(m_refMap != nullptr && m_refMap->pMap != nullptr); // 예외처리 좀 바뀜
 
-	// 좌표 값 지정
 	int nWidth = m_refMap->x;
 	int nHeight = m_refMap->y;
-	// 맵 데이터 불러옴 ?
 	const std::string& sRef = m_refMap->mapOriginData;
 	m_pMap = m_refMap->pMap;
 
@@ -115,8 +112,15 @@ void GameManager::Update(float a_fDeltaTime)
 
 void GameManager::Render()
 {
-	//랜더도 간결하게 바뀜
-	// for문 돌려 그리던걸 맵 데이터 클래스에서 불러오는듯 ? 
+	//포문돌려서 오브젝트 그리기?
+	for (auto obj : m_vcObj)
+	{
+		obj->Render();
+	}
+	//플레이어 그리기
+	m_pPlayer->Render();
+
+	//맵 그려주고
 	SetCursor(0, 0);
 	m_refMap->Render();
 }
@@ -134,7 +138,7 @@ void GameManager::DropItem(Object* a_pObj)
 
 }
 
-//추가됨 - 아이템 먹으면? 종류에 따라 효과 상승
+//아이템 먹으면? 종류에 따라 효과 상승
 void GameManager::ObtainItem(eItem a_eItem)
 {
 	switch (a_eItem)
@@ -156,7 +160,7 @@ void GameManager::ObtainItem(eItem a_eItem)
 }
 
 #include "Bomb.h"
-//폭탄의 터지는 시간과 파워?
+//폭탄의 터지는 시간과 파워?를 가져오는 함수?같음
 void GameManager::GetBombData(Bomb* a_refBomb) const
 {
 	a_refBomb->m_fLifeTime = m_stPlayerData.fBombTime;

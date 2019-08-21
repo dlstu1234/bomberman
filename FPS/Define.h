@@ -72,9 +72,14 @@ enum class eItem
 enum eGame
 {
 	MaxStage = 3,
+	//3번째에서 생김 타일 사이즈?
+	TileSize = 5,
 };
 #define SAFE_DELETE(x)		{ if((x) != nullptr ) { delete (x); (x) = nullptr; } }
 #define SAFE_DELETE_ARR(x)	{ if((x) != nullptr ) { delete[] (x); (x) = nullptr; } }
+
+//랜더 타일? 맵을 그려주나?
+using RenderTile = char[TileSize][TileSize];
 
 enum class CURSOR_TYPE { NOCURSOR, SOLIDCURSOR, NORMALCURSOR };
 
