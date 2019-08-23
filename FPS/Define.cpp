@@ -35,3 +35,9 @@ void SetCursorType(CURSOR_TYPE c)
 
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
 }
+//콘솔 사이즈? 세팅
+void SetConsoleSize(int a_nWidth, int a_nHeigth, int a_nX, int a_nY)
+{
+	HWND console = GetConsoleWindow();
+	MoveWindow(console, a_nX, a_nY, a_nWidth, a_nHeigth, TRUE);
+}

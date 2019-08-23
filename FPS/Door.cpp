@@ -11,11 +11,11 @@ Door::Door(int x, int y) : Object(x, y)
 			{ 'X', '-', '-', '-', 'X' },
 }
 , m_Open{
-			{ ' ', '1', '1', '1', ' ' },
-			{ '1', ' ', ' ', ' ', '1' },
-			{ '1', ' ', ' ', ' ', '1' },
-			{ '1', ' ', ' ', ' ', '1' },
-			{ ' ', '1', '1', '1', ' ' },
+			{ ' ', 'D', 'D', 'D', ' ' },
+			{ 'D', ' ', ' ', ' ', 'D' },
+			{ 'D', ' ', ' ', ' ', 'D' },
+			{ 'D', ' ', ' ', ' ', 'D' },
+			{ ' ', 'D', 'D', 'D', ' ' },
 } {
 	m_pNowAni = &m_Close;
 }
@@ -36,14 +36,14 @@ void Door::Init()
 }
 
 //문과 인터렉션 닫혀있으면 리턴해주고 아니면 스테이지 시작으로 이동?
-void Door::Interaction(class Hero* a_refHero)
+bool Door::Interaction(class Player* a_refHero)
 {
-	if (m_eState == eDoorState::Close) { return; }
+	if (m_eState == eDoorState::Close) { return false; }
 
-	GameMng()->StageStart();
-}
+	if( IsCross(a_refHero) == true )
+	{
+		GameMng()->StageEnd();
+	}
 
-void Door::Render()
-{
-
+	return false;
 }

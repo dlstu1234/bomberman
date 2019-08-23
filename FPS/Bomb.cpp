@@ -43,8 +43,3 @@ void Bomb::Explosived(Bomb* a_refBomb)
 
 	// Bomb!
 }
-
-void Bomb::Render()
-{
-
-}

@@ -6,15 +6,15 @@ public:
 	MapData() = default;
 	static MapData* Get(int a_nStage);
 	static void Init();
-
-	//새로 생긴 함수 지우기?
 	static void Release();
+	//오브젝트 타입의 데이터 입력? 불러오는듯
+	static eObjectType DataToObjectType(char c);
 
 private:
 	static MapData m_arrData[eGame::MaxStage];
 
 private:
-	//3번째 이름이 바뀜
+	//맵 버퍼 만들기
 	void MakeMapBuffer();
 
 	//데이터 지우기?같음 어떤 데이터?
@@ -29,9 +29,9 @@ public:
 	int x;
 	int y;
 
-	//string에서 const char*로 변경 맵 데이타 생성?
+	//맵 데이타 생성?
 	const char* mapOriginData;
-	//뭔가 비어있음
+	//맵 상태가 비어있음
 	char** pMap = nullptr;
 };
 

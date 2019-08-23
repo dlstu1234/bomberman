@@ -23,7 +23,13 @@ eObjectType Monster::GetObjectType() const
 	return eObjectType::Monster;
 }
 
-void Monster::Render()
+//플레이어와의 상호작용
+bool Monster::Interaction(Player* a_refHero)
 {
+	if( IsCross(a_refHero) == true )
+	{
+		GameMng()->Die(this);
+	}
 
+	return false;
 }

@@ -1,23 +1,29 @@
 #pragma once
-//추가된 클래스 애니? 애니메이션 관련된거같음
+//애니메이션 관련된거같음
 class Ani
 {
 public:
-	Ani();
+	Ani() = default;
 	virtual ~Ani();
 
 	void Resize(int a_nAniTypeCount);
-	void Add(int a_nAniType, RenderTile* tile);
+	void Add(int a_nAniType, const RenderTile* tile);
+	void Add(int a_nAniType, const std::initializer_list<RenderTile>& tiles);
 	void SetState(int a_nAni, int a_nFrame = 0);
+	void NextCut();
+	//업데이트
+	void Update(float a_fDeltaTime);
 	RenderTile* Get();
 
 	//뭔가를 벡터에 넣으려는거 같은데 맵인가?
 	std::vector<std::vector<RenderTile*>> m_vcAni;
 	std::vector<RenderTile*>* m_pCurrentAni = nullptr;
-
-	//프레임관련된거??
+ 
 	int m_nAniType = 0;
-	int m_nNowMaxFrame = 0;
-	int m_nFrame = 0;
+	int m_nNowMaxCut = 0;
+	int m_nCut = 0;
+	float m_fNowTile = 0;
+	
+	inline static const float a_fCutTime = 0.2f
 };
 

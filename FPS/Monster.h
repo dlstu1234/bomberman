@@ -9,9 +9,7 @@ public:
 
 	// Object을(를) 통해 상속됨
 	virtual eObjectType GetObjectType() const override;
-
-	//몬스터에도 추가됨
-	virtual void Render() override;
+	virtual bool Interaction(class Player* a_refHero) override;
 
 	RenderTile	m_Data;
 };

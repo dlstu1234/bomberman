@@ -2,12 +2,14 @@
 #define PCH_H
 
 #include <iostream>
-#include <vector>
+
 #include <cassert>
 #include <Windows.h>
-
-#include <string>
 #include <ctime>
+
+#include <array>
+#include <string>
+#include <vector>
 #include <queue>
 
 #include "vld.h"

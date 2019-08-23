@@ -9,10 +9,7 @@ public:
 
 	// Object을(를) 통해 상속됨
 	virtual eObjectType GetObjectType() const override;
-
 	virtual void Explosived(class Bomb* a_refBomb) override;
-	
-	virtual void Render() override;
 
 	RenderTile	m_Data;
 };

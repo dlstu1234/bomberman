@@ -16,49 +16,51 @@ void MapData::Init()
 	m_arrData[0].x = 10;
 	m_arrData[0].y = 10;
 	m_arrData[0].mapOriginData = 
-		"1111111111"
-		"1000000601"
-		"1020007001"
-		"1000000001"
-		"1000300001"
-		"1000000001"
-		"1000004001"
-		"1000000001"
-		"1050000001"
-		"1111111111";
+		"WWWWWWWWWW"
+		"W      B W"
+		"W B   B  W"
+		"W  B     W"
+		"W  B     W"
+		"W  B     W"
+		"W  B  M  W"
+		"W  B     W"
+		"W PIIIII W"
+		"WWWWWWWWWW";
 	m_arrData[0].MakeMapBuffer();
 
 	// 2스테이지
 	m_arrData[1].x = 10;
 	m_arrData[1].y = 10;
 	m_arrData[1].mapOriginData =
-		"1111111111"
-		"1000000601"
-		"1020007001"
-		"1000000001"
-		"1000300001"
-		"1000000001"
-		"1000004001"
-		"1000000001"
-		"1050000001"
-		"1111111111";
+		"WWWWWWWWWW"
+		"W  I   B W"
+		"W B   B  W"
+		"W  B     W"
+		"W  B     W"
+		"W  B     W"
+		"W  B  M  W"
+		"W  B     W"
+		"W P      W"
+		"WWWWWWWWWW";
 	m_arrData[1].MakeMapBuffer();
 
 	// 3스테이지
 	m_arrData[2].x = 10;
 	m_arrData[2].y = 10;
 	m_arrData[2].mapOriginData =
-		"1111111111"
-		"1000000601"
-		"1020007001"
-		"1000000001"
-		"1000300001"
-		"1000000001"
-		"1000004001"
-		"1000000001"
-		"1050000001"
-		"1111111111";
+		"WWWWWWWWWW"
+		"W      B W"
+		"W B   B  W"
+		"W  B     W"
+		"W  B  I  W"
+		"W  B     W"
+		"W  B  M  W"
+		"W  B     W"
+		"W P      W"
+		"WWWWWWWWWW";
 	m_arrData[2].MakeMapBuffer();
+	
+	cout << "map ok" << endl;
 }
 
 //맵 지우기
@@ -69,23 +71,46 @@ void MapData::Release()
 		mapData.ReleaseData();
 	}
 }
+//오브젝트의 타입을 리턴해주는 함수
+eObjectType MapData::DataToObjectType(char c)
+{
+	eObjectType eReturn = eObjectType::None;
+	
+	switch (c)
+	{
+		case ' ': {return eObject::None;} break;
+		case 'W': {eReturn = eObject::Wall;} break;
+		case 'B': {eReturn = eObject::Box;} break;
+		case 'D': {eReturn = eObject::Door;} break;
+		
+		case 'I': {eReturn = eObject::Item;} break;
+		//case 'O': {eReturn = eObject::Bomb;} break;
+		case 'M': {eReturn = eObject::Monster;} break;
+		case 'P': {eReturn = eObject::Player;} break;
+	}
+	
+	assert(eReturn != eObjectType::None);
+	return eReturn;
+}
 
-// 3번째 맵 만들기 변경됨
+// 맵 만들기
 void MapData::MakeMapBuffer()
 {
 	int nX = x * TileSize;
 	int nY = y * TileSize;
 
 	pMap = new char*[nY];
-	//memcyp 쓰던걸 빼버림
+
 	for (int i = 0; i < nY; ++i)
 	{
 		pMap[i] = new char[nX + 1];
+		//메모리 세팅
+		memset(pMap[i], ' ', sizeof(char)*(nX +1));
 		pMap[i][nX] = 0;
 	}
 }
 
-//3번째에 바뀐 맵 데이터 지우기
+//맵 데이터 지우기
 void MapData::ReleaseData()
 {
 	int nY = y * TileSize;
@@ -98,9 +123,11 @@ void MapData::ReleaseData()
 	SAFE_DELETE_ARR(pMap);
 }
 
-//3번째에 바뀜 그리는게 조금 달라짐 nY를 받는?
+//맵 랜더 그려주기
 void MapData::Render()
 {
+	SetCursor(0, 0);
+	
 	int nY = y * TileSize;
 
 	for (int i = 0; i < nY; ++i)
