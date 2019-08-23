@@ -104,6 +104,12 @@ bool Item::Interaction(class Player* a_refHero)
 
 	return false;
 }
+
+bool Item::CanMove() const
+{
+	return true;
+}
+
 //업데이트 그린거 지워주는듯
 void Item::_PreUpdate(float a_fDelta)
 {

@@ -7,7 +7,7 @@ MapData MapData::m_arrData[eGame::MaxStage] = { {}, };
 //스테이지 정보 불러오기
 MapData* MapData::Get(int a_nStage)
 {
-	return &m_arrData[a_nStage];
+	return &m_arrData[a_nStage - 1];
 }
 
 void MapData::Init()
@@ -78,15 +78,15 @@ eObjectType MapData::DataToObjectType(char c)
 	
 	switch (c)
 	{
-		case ' ': {return eObject::None;} break;
-		case 'W': {eReturn = eObject::Wall;} break;
-		case 'B': {eReturn = eObject::Box;} break;
-		case 'D': {eReturn = eObject::Door;} break;
+		case ' ': { return eObjectType::None; } break;
+		case 'W': { eReturn = eObjectType::Wall; } break;
+		case 'B': { eReturn = eObjectType::Box; } break;
+		case 'D': { eReturn = eObjectType::Door; } break;
 		
-		case 'I': {eReturn = eObject::Item;} break;
-		//case 'O': {eReturn = eObject::Bomb;} break;
-		case 'M': {eReturn = eObject::Monster;} break;
-		case 'P': {eReturn = eObject::Player;} break;
+		case 'I': { eReturn = eObjectType::Item; } break;
+		//case 'O': { eReturn = eObjectType::Bomb; } break;
+		case 'M': { eReturn = eObjectType::Monster; } break;
+		case 'P': { eReturn = eObjectType::Player; } break;
 	}
 	
 	assert(eReturn != eObjectType::None);
@@ -127,7 +127,7 @@ void MapData::ReleaseData()
 void MapData::Render()
 {
 	SetCursor(0, 0);
-	
+
 	int nY = y * TileSize;
 
 	for (int i = 0; i < nY; ++i)

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Define.h"
+#include "SceneManager.h"
 
 void SetCursor(const COORD& a_stPos)
 {
@@ -24,12 +25,12 @@ void SetCursorType(CURSOR_TYPE c)
 		CurInfo.bVisible = false;
 		break;
 	case CURSOR_TYPE::SOLIDCURSOR:
-		CurInfo.dwSize = 1;
-		CurInfo.bVisible = false;
+		CurInfo.dwSize = 100;
+		CurInfo.bVisible = true;
 		break;
 	case CURSOR_TYPE::NORMALCURSOR:
-		CurInfo.dwSize = 1;
-		CurInfo.bVisible = false;
+		CurInfo.dwSize = 20;
+		CurInfo.bVisible = true;
 		break;
 	}
 

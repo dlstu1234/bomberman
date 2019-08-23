@@ -10,6 +10,7 @@ Box::Box(int x, int y) : Object(x, y)
 			{ '1', ' ', ' ', ' ', '1' },
 			{ '1', '1', '1', '1', '1' },
 } {m_pNowAni = &m_Data; }
+
 Box::~Box() { }
 
 eObjectType Box::GetObjectType() const
@@ -17,7 +18,9 @@ eObjectType Box::GetObjectType() const
 	return eObjectType::Box;
 }
 
-void Box::Explosived(Bomb* a_refBomb)
+bool Box::Explosived()
 {
 	GameMng()->DropItem(this);
+	
+	return true;
 }

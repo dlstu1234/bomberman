@@ -14,7 +14,7 @@ eScene IntroScene::GetScene() const
 {
 	return eScene::Intro;
 }
-//업데이트 내용 추가됨
+
 void IntroScene::Update(float a_fDeltaTime)
 {
 	if (IsKeyDown(eKey::A) == true)
@@ -22,7 +22,6 @@ void IntroScene::Update(float a_fDeltaTime)
 		m_refParent->ChangeScene(eScene::Game);
 	}
 }
-
 
 void IntroScene::Render()
 {

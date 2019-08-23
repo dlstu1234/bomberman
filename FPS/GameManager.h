@@ -10,6 +10,28 @@ struct CharacterData
 
 	CharacterData();
 };
+//폭팔 스트럭트
+struct Explosion
+{
+	int x;
+	int y;
+	int pow;
+
+	Explosion(int _x, int _y, int _pow) : x(_x), y(_y), pow(_pow)
+	{
+	}
+};
+//오브젝트 생성 스트럭트
+struct CreateObj
+{
+	int x;
+	int y;
+	eObjectType type;
+
+	CreateObj(int _x, int _y, eObjectType _type) : x(_x), y(_y), type(_type)
+	{
+	}
+};
 
 //게임 내부 구현 클래스
 class GameManager
@@ -67,6 +89,7 @@ public:
 		Run,
 		End,
 	};
+public:
 
 	void Init();
 	void Release();
@@ -78,11 +101,12 @@ public:
 
 	void Update(float a_fDeltaTime);
 	void Render();
+	void PostRender();
 
 	//오브젝트 지우기
 	void ClearObject();
 	//오브젝트 생성
-	void CreateObject(eObjectType a_eObjType, int x, int y);
+	class Object* CreateObject(eObjectType a_eObjType, int x, int y);
 
 	// 상호작용
 	//지움
@@ -90,15 +114,23 @@ public:
 	//아이템 드랍
 	void DropItem(class Object* a_pObj);
 	//폭탄 데이터
-	void GetBombData(class Bomb* a_refBomb) const;
+	void GetBombData(OUT class Bomb* a_refBomb) const;
 	//아이템과의 상호작용
 	void ObtainItem(eItem a_eItem);
 	//죽음
 	void Die(class Object* a_refObj);
 	//폭탄 생성?
-	bool AddBomb(int a_nPlayerX, int a_nPlayerY);
+	class Object* AddBomb(int a_nPlayerX, int a_nPlayerY);
 	//터지고나면 ?
-	void ResistExplosion(int a_nBombX, int a_nBombY, int a_nPower);
+	void ResistExplosion(Object* a_refBomb, int x, int y, int pow);
+	bool MoveCheck(class Object* a_pMoveIgnoreObject = nullptr);
+	void CheckExplosion(Object* a_refExplosion);
+	void AddScore(int a_nScore);
+
+private:
+
+	void CreateExplosionRecursive(eDir a_eDir, int nBombX, int nBombY, int a_nRemainPower);
+	bool FindObject_withPosition(eObjectType a_eObj, int x, int y);
 
 private:
 
@@ -112,12 +144,18 @@ private:
 	class MapData* m_refMap = nullptr;
 	char** m_pMap = nullptr;
 
-	// 데이터
+	// 게임 데이터
 	int m_nNowLife = 0;		// 플레이어 라이프
 	int m_nScore = 0;		// 점수
 
+	// 삭제용 임시 캐싱
+	std::vector<class Object*> m_vcDelete;
+
+	// 생성용 임시 캐싱
+	std::vector<CreateObj> m_vcCreate;
+
 	// 폭발
-	std::queue<class Bomb*> m_qBomb;
+	std::vector<Explosion> m_vcExplision;
 
 	// 현재 플레이어 데이터
 	CharacterData m_stPlayerData;
@@ -126,6 +164,8 @@ private:
 	eGameState	m_eState = eGameState::None;
 
 	// 로그
+
+public:
 	std::string m_sLog = "";
 };
 

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Player.h"
 
+#include "GameManager.h"
+
 //생성자에서 데이터로 넣어서 생성해주는듯
 Player::Player(int x, int y) : Object(x, y)
 , m_Data{
@@ -50,7 +52,7 @@ bool Player::_Update(float a_fDelta)
 //플레이어 움직임
 void Player::Move(float a_fDeltaTime)
 {
-	float fAdd = a_fDeltaTime * (m_refStat->fMoveSeepd);
+	float fAdd = a_fDeltaTime * (m_refStat->fMoveSpeed);
 
 	float fX = 0;
 	float fY = 0;
@@ -69,7 +71,7 @@ void Player::BombCheck()
 {
 	if(m_nPutBombCount >= m_refStat->nBombCount)  { return; }
 
-	if (IsKeyDown(eKey::Space))
+	if (IsKeyDown(eKey::SPACE))
 	{
 		COORD c = rt.Center();
 		if( GameMng()->AddBomb(c.X, c.Y) == true )

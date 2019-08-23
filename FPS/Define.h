@@ -26,6 +26,14 @@ enum class eKey
 
 	Max,
 };
+//방향 추가댐
+enum class eDir
+{
+	Left,
+	Top,
+	Right,
+	Bottom,
+};
 
 enum class eInputState : short
 {
@@ -61,10 +69,12 @@ enum class eObjectType
 	Box = RenderDepth2 + 1,
 	Door,
 	Item,
-	Bomb,
 
 	Player = RenderDepth3 + 1,
 	Monster,
+	//폭발과 폭탄이 변경됨
+	Explosion,
+	Bomb,
 };
 
 enum class eItem
@@ -85,6 +95,7 @@ enum eGame
 };
 #define SAFE_DELETE(x)		{ if((x) != nullptr ) { delete (x); (x) = nullptr; } }
 #define SAFE_DELETE_ARR(x)	{ if((x) != nullptr ) { delete[] (x); (x) = nullptr; } }
+
 //??
 #include "SceneManager.h"
 inline bool IsKeyDown(eKey a_eKey)	{ return SceneManager::GetKeyState(a_eKey) == eInputState::Down; } 
@@ -105,7 +116,7 @@ struct RenderLine
 	{
 		assert(a.size() <= TileSize);
 		
-		int nIndex  = 0;
+		int nIndex = 0;
 		for(auto& _c : a)
 		{
 			c[nIndex++] = _c;
@@ -119,7 +130,7 @@ struct RenderLine
 		size_t nLen = strlen(s);
 		assert(nLen <= TileSize);
 		
-		stycpy_s(c, sizeof(char)*(TileSize + 1), s);
+		strcpy_s(c, sizeof(char)*(TileSize + 1), s);
 	}
 	
 	operator const char*() const
@@ -128,7 +139,7 @@ struct RenderLine
 	}
 	
 	char c[TileSize + 1];
-}
+};
 
 struct RenderTile
 {
@@ -161,11 +172,12 @@ struct Rect
 	float w; // width;
 	float h; // height;
 
-	bool IsCross(const Rect& rt)
+	//상수로 변경
+	bool IsCross(const Rect& rt) const
 	{
 		if ( (x >= rt.x + rt.w) ||
 			 (x + w <= rt.x) ||
-			 (y >= rt.y + h) ||
+			 (y >= rt.y + rt.h) ||
 			 (y + h <= rt.y) )
 		{
 			return false;
@@ -174,7 +186,8 @@ struct Rect
 		return true;
 	}
 
-	bool IsIn(int _x, int _y)
+	//상수로 변경
+	bool IsIn(int _x, int _y) const
 	{
 		if( (x <= _x) && (_x <= x+w) &&
 			(y <= _y) && (_y <= y+h))
@@ -185,7 +198,8 @@ struct Rect
 		return false;
 	}
 
-	COORD Center()
+	//상수로 변경
+	COORD Center() const
 	{
 		return COORD{(short)(x+w/2), (short)(y+h/2)};
 	}

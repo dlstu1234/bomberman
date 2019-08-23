@@ -12,7 +12,7 @@ void Ani::Resize(int a_nAniTypeCount)
 }
 
 //
-void Ani::Add(int a_nAni, RenderTile* tile)
+void Ani::Add(int a_nAni, const RenderTile& tile)
 {
 	//예외처리 값보다 사이즈가 작으면 터트림 리사이즈를 불러와주세용
 	assert(a_nAni < m_vcAni.size() && "logic error - Call Resize");
@@ -21,7 +21,7 @@ void Ani::Add(int a_nAni, RenderTile* tile)
 }
 
 //타입에 맞는 타일을 넣어주는? 함수?
-void Add(int a_nAniType, const std::initializer_list<RenderTile>& tiles)
+void Ani::Add(int a_nAniType, const std::initializer_list<RenderTile>& tiles)
 {
 	
 	for(auto& tile : tiles)
@@ -50,7 +50,7 @@ void Ani::NextCut()
 }
 
 //업데이트!
-void Ani::Updata(float a_fDeltaTime)
+void Ani::Update(float a_fDeltaTime)
 {
 	m_fNowTile += a_fDeltaTime;
 	
@@ -64,7 +64,7 @@ void Ani::Updata(float a_fDeltaTime)
 //가져오는듯 뭘가져오나?
 RenderTile* Ani::Get()
 {
-	RenderTile* r = (*m_pCurrentAni)[m_nCut++];
+	RenderTile* r = &(*m_pCurrentAni)[m_nCut];
 	return r;
 }
 

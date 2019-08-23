@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Door.h"
 #include "GameManager.h"
+#include "Player.h"
 
 Door::Door(int x, int y) : Object(x, y)
 , m_Close{
@@ -27,6 +28,11 @@ Door::~Door()
 eObjectType Door::GetObjectType() const
 {
 	return eObjectType::Door;
+}
+
+bool Door::CanMove() const
+{
+	return (m_eState == eDoorState::Open);
 }
 
 //¹®ÀÌ ´ÝÈû

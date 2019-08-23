@@ -38,15 +38,17 @@ void GameManager::GameInit()
 	m_nNowStage = 0;
 }
 
+//스테이지 시작
 void GameManager::StageStart()
 {
 	++m_nNowStage;
 	m_fGameTime = RoundTime;
+	m_eState = eGameState::Run;
 
 	ClearObject();
 
-	MapData::Get(m_nNowStage);
-	assert(m_refMap != nullptr && m_refMap->pMap != nullptr); // 예외처리 좀 바뀜
+	m_refMap = MapData::Get(m_nNowStage);
+	assert(m_refMap != nullptr && m_refMap->pMap != nullptr);
 
 	int nWidth = m_refMap->x;
 	int nHeight = m_refMap->y;
@@ -59,7 +61,7 @@ void GameManager::StageStart()
 		for (int x = 0; x < nWidth; ++x)
 		{
 			int nIndex = y * nWidth + x;
-			eObjectType eType = (eObjectType)(sRef[nIndex] - '0');
+			eObjectType eType = MapData::DataToObjectType(sRef[nIndex]);
 
 			if (eType == eObjectType::None) { continue; }
 
@@ -84,7 +86,7 @@ void GameManager::StageEnd()
 //오브젝트 지움 암튼 지움
 void GameManager::ClearObject()
 {
-	for (auto& vc : m_vcObj)
+	for (auto& vc : m_arrObj)
 	{
 		for (auto* pObj : vc)
 		{
@@ -95,8 +97,8 @@ void GameManager::ClearObject()
 	}
 }
 
-//오브젝트 생성 함수
-void GameManager::CreateObject(eObjectType a_eObjType, int x, int y)
+//오브젝트 생성 함수 오브젝트 포인터로 바뀜
+Object* GameManager::CreateObject(eObjectType a_eObjType, int x, int y)
 {
 	auto* pObj = ObjectFactory::Make(a_eObjType, x, y);
 	if (a_eObjType == eObjectType::Player)
@@ -113,17 +115,17 @@ void GameManager::CreateObject(eObjectType a_eObjType, int x, int y)
 	}
 
 	pObj->SetMap(m_pMap);
+	//만들어진 오브젝트를 리턴
+	return pObj;
 }
 
 void GameManager::Update(float a_fDeltaTime)
 {
+	m_vcDelete.clear();
 	int nSize = m_arrObj.size();
 
-	static std::vector<class Object*> vcDelete;
-	vcDelete.clear();
-
 	// 0뎁스의 오브젝트는 업데이트 할 내용이 없음
-	for( int i=1; i<nSize; ++i )
+	for( int i = 1; i < nSize; ++i )
 	{
 		auto& arrObj = m_arrObj[i];
 
@@ -143,20 +145,21 @@ void GameManager::Update(float a_fDeltaTime)
 
 			if( p != nullptr )
 			{
-				vcDelete.push_back(p);
+				m_vcDelete.push_back(p);
 			}
 		}
 	}
 
-	// 인터렉션 이후 삭제해야할 오브젝트 삭제
-	for( auto* pDeleteObj : vcDelete )
+	// 없앰
+	/*for( auto* pDeleteObj : vcDelete )
 	{
 		pDeleteObj->RenderClear();
 		RemoveObject(pDeleteObj);
 	}
-	vcDelete.clear();
+	vcDelete.clear();*/
 
 	m_pPlayer->Update(a_fDeltaTime);
+
 }
 
 //그리기
@@ -179,7 +182,7 @@ void GameManager::Render()
 	{
 		StageStart();
 	}
-	//뭔가 그려줌 아마 캐릭터의 좌표인덧
+	//테스트용 로그
 	cout << "pos : " << m_pPlayer->rt.x << " /// " << m_pPlayer->rt.y << endl;
 	COORD center = m_pPlayer->rt.Center();
 
@@ -193,6 +196,53 @@ void GameManager::Render()
 	}
 }
 
+void GameManager::PostRender()
+{
+	//삭제할 오브젝트 삭제
+	for (auto* pDeleteObj : m_vcDelete)
+	{
+		pDeleteObj->RenderClear();
+		RemoveObject(pDeleteObj);
+	}
+	m_vcDelete.clear();
+
+	// 폭탄 추가
+	for (auto& ex : m_vcExplision)
+	{
+		int nBombX = ex.x;
+		int nBombY = ex.y;
+		int nPow = ex.pow;
+
+		CreateObject(eObjectType::Explosion, nBombX, nBombY);
+
+		CreateExplosionRecursive(eDir::Left, nBombX, nBombY, nPow);
+		CreateExplosionRecursive(eDir::Top, nBombX, nBombY, nPow);
+		CreateExplosionRecursive(eDir::Right, nBombX, nBombY, nPow);
+		CreateExplosionRecursive(eDir::Bottom, nBombX, nBombY, nPow);
+	}
+
+	m_vcExplision.clear();
+}
+
+void GameManager::CreateExplosionRecursive(eDir a_eDir, int nBombX, int nBombY, int a_nRemainPower)
+{
+	switch (a_eDir)
+	{
+	case eDir::Left: { nBombX -= 1; } break;
+	case eDir::Top: { nBombY -= 1; } break;
+	case eDir::Right: { nBombX += 1; } break;
+	case eDir::Bottom: { nBombY += 1; } break;
+	}
+
+	CreateObject(eObjectType::Explosion, nBombX, nBombY);
+
+	--a_nRemainPower;
+	if (a_nRemainPower == 0) { return; }
+
+	CreateExplosionRecursive(a_eDir, nBombX, nBombY, a_nRemainPower);
+}
+}
+
 void GameManager::RemoveObject(class Object* a_pObj)
 {
 	//오브젝트의 타입을 받고
@@ -204,11 +254,12 @@ void GameManager::RemoveObject(class Object* a_pObj)
 	auto& vc = m_arrObj[nLevelIndex];
 	
 	// 아마도 벡터의 시작에서 끝중에 값이 일치하면 지우는듯 ?
-	auto itor = std::find_if(std::begin(vc), std::end(vc), [a_pObj](Object*p) {return p == a_pObj;});
-	assert(itor != vc.end());
-	vc.erase(itor);
-
-	SAFE_DELETE(a_pObj);
+	auto itor = std::find_if(std::begin(vc), std::end(vc), [a_pObj](Object*p) {return p == a_pObj; });
+	if (itor != vc.end())
+	{
+		vc.erase(itor);
+		SAFE_DELETE(a_pObj);
+	}
 }
 //비엇슴
 void GameManager::DropItem(Object* a_pObj)
@@ -228,7 +279,7 @@ void GameManager::ObtainItem(eItem a_eItem)
 		m_stPlayerData.nBombCount += 1;
 		break;
 	case eItem::SpeedUp:
-		m_stPlayerData.fMoveSpeed += 1;
+		m_stPlayerData.fMoveSpeed += 30;
 		break;
 	default:
 		assert(false && "arg error");
@@ -243,45 +294,93 @@ void GameManager::Die(class Object* a_refObj)
 }
 
 //폭탄 체크으
-bool GameManager::AddBomb(int a_nPlayerX, int a_nPlayerY)
+Object* GameManager::AddBomb(int a_nPlayerX, int a_nPlayerY)
 {
-	int nX = a_nPlayerX / TileSize;
-	int nY = a_nPlayerY / TileSize;
-	constexpr static int nIndex = ((int)eObjectType::Bomb / (int)eObjectType::RenderDepthGap) - 1;
-
-	bool bExsistBomb = false;
-
-	for( auto* pObj : m_arrObj[nIndex] )
+	if (FindObject_withPosition(eObjectType::Bomb, a_nPlayerX, a_nPlayerY) == false)
 	{
-		if( pObj->GetObjectType() == eObjectType::Bomb )
-		{
-			bExsistBomb = pObj->rt.IsIn(a_nPlayerX, a_nPlayerY);
+		int nX = a_nPlayerX / TileSize;
+		int nY = a_nPlayerY / TileSize;
 
-			if( bExsistBomb == true )
+		return CreateObject(eObjectType::Bomb, nX, nY);
+	}
+
+	return nullptr;
+}
+
+bool GameManager::FindObject_withPosition(eObjectType a_eObj, int x, int y)
+{
+	int nX = x / TileSize;
+	int nY = y / TileSize;
+	int nIndex = ((int)a_eObj / (int)eObjectType::RenderDepthGap) - 1;
+
+	for (auto* pObj : m_arrObj[nIndex])
+	{
+		if (pObj->GetObjectType() == a_eObj)
+		{
+			if (pObj->rt.IsIn(x, y) == true)
 			{
-				break;
+				return true;
 			}
 		}
 	}
 
-	if( bExsistBomb == true )
+	return false;
+}
+
+void GameManager::ResistExplosion(Object* a_refBomb, int x, int y, int pow)
+{
+	m_pPlayer->ResetBomb(a_refBomb);
+	m_vcExplision.emplace_back(x / TileSize, y / TileSize, pow);
+}
+
+bool GameManager::MoveCheck(Object* a_pMoveIgnoreObject /*= nullptr*/)
+{
+	for (auto& vc : m_arrObj)
 	{
-		return false;
+		for (auto* pObj : vc)
+		{
+			if (a_pMoveIgnoreObject == pObj) { continue; }
+
+			if (pObj->CanMove() == true) { continue; }
+
+			if (pObj->IsCross(m_pPlayer) == true)
+			{
+				return false;
+			}
+		}
 	}
-	
-	CreateObject(eObjectType::Bomb , nX, nY);
+
 	return true;
 }
 
-//폭발하면 카운트 줄이기?
-void GameManager::ResistExplosion(int a_nBombX, int a_nBombY, int a_nPower)
+void GameManager::CheckExplosion(Object* a_refExplosion)
 {
-	m_pPlayer->m_nPutBombCount -= 1;
+	int nIndex = (int)eObjectType::RenderDepth3 - 1; // 폭발 타겟들만 있는 뎁스
+	const auto& vc = m_arrObj[nIndex];
+
+	for (auto* pObj : vc)
+	{
+		if (pObj == a_refExplosion) { continue; }
+
+		if (a_refExplosion->IsCross(pObj) == true)
+		{
+			if (pObj->Explosived() == true)
+			{
+				m_vcDelete.push_back(pObj);
+			}
+		}
+	}
+
+}
+
+void GameManager::AddScore(int a_nScore)
+{
+	m_nScore += m_nScore;
 }
 
 #include "Bomb.h"
 //폭탄의 터지는 시간과 파워?를 가져오는 함수?같음
-void GameManager::GetBombData(Bomb* a_refBomb) const
+void GameManager::GetBombData(OUT Bomb* a_refBomb) const
 {
 	a_refBomb->m_fLifeTime = m_stPlayerData.fBombTime;
 	a_refBomb->m_nExplosiveRange = m_stPlayerData.nBombPower;

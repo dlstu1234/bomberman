@@ -1,21 +1,21 @@
 #pragma once
 #include "Object.h"
-
-class Item : public Object
+//폭발 클래스 생김
+class Explosion :
+	public Object
 {
 public:
-	Item(int x, int y);
-	virtual ~Item();
+	Explosion(int x, int y);
+	virtual ~Explosion();
 
-	// Object을(를) 통해 상속됨
+	//Object을(를) 통해 상속됨
 	virtual eObjectType GetObjectType() const override;
-	virtual bool Interaction(class Player* a_refHero) override;
-
 	virtual bool CanMove() const override;
 
 	virtual void _PreUpdate(float a_fDelta) override;
 	virtual bool _Update(float a_fDelta) override;
 
-	eItem m_eType = eItem::None;
-	class Ani* m_pAni = nullptr;
+	float m_fLife = 2.0f;
+	class Ani* m_pAni = nullptr
 };
+

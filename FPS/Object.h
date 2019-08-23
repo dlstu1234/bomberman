@@ -18,7 +18,7 @@ public:
 	
 	virtual void Init();
 	virtual void Explosived(class Bomb* a_refBomb);
-	virtual void Interaction(class Hero* a_refHero);
+	virtual bool Interaction(class Player* a_refHero);
 
 	//ÁÂÇ¥ ¼¼ÆÃ?
 	inline void SetPos(int _x, int _y) { x = _x; y = _y; rt.x = _x; rt.y = _y; }

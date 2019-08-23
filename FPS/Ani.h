@@ -1,5 +1,5 @@
 #pragma once
-//애니메이션 관련된거같음
+//애니메이션 클래스
 class Ani
 {
 public:
@@ -7,8 +7,9 @@ public:
 	virtual ~Ani();
 
 	void Resize(int a_nAniTypeCount);
-	void Add(int a_nAniType, const RenderTile* tile);
+	void Add(int a_nAniType, const RenderTile& tile);
 	void Add(int a_nAniType, const std::initializer_list<RenderTile>& tiles);
+
 	void SetState(int a_nAni, int a_nFrame = 0);
 	void NextCut();
 	//업데이트
@@ -16,14 +17,14 @@ public:
 	RenderTile* Get();
 
 	//뭔가를 벡터에 넣으려는거 같은데 맵인가?
-	std::vector<std::vector<RenderTile*>> m_vcAni;
-	std::vector<RenderTile*>* m_pCurrentAni = nullptr;
+	std::vector<std::vector<RenderTile>> m_vcAni;
+	std::vector<RenderTile>* m_pCurrentAni = nullptr;
  
 	int m_nAniType = 0;
 	int m_nNowMaxCut = 0;
 	int m_nCut = 0;
 	float m_fNowTile = 0;
 	
-	inline static const float a_fCutTime = 0.2f
+	inline static const float a_fCutTime = 0.2f;
 };
 

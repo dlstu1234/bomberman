@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 #include <ctime>
+#include <cstdlib>
 
 #include "SceneManager.h"
 #include "GameManager.h"
@@ -15,7 +16,7 @@ Application::Application()
 {
 	SetConsoleSize(1400, 1200);
 	SetCursorType(CURSOR_TYPE::NOCURSOR);
-	srand(time(0));
+	srand((unsigned int)time(0));
 
 	InitSceneMng();
 	InitGameMng();
@@ -44,6 +45,8 @@ void Application::Run()
 			if (Update(fDeltaTime) == eUpdateState::Final) { break; }
 
 			Render();
+			//포스트 랜더 추가
+			PostRender();
 		}
 	}
 }
@@ -58,9 +61,15 @@ eUpdateState Application::Update(float a_fDelta)
 	SceneMng()->Update(a_fDelta);
 
 	return eUpdateState::Run;
+
 }
 
 void Application::Render()
 {
 	SceneMng()->Render();
+}
+//랜더 무슨 랜더?
+void Application::PostRender()
+{
+	SceneMng()->PostRender();
 }
